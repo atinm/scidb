@@ -10,33 +10,35 @@
 #   )___(     _(____/____(___ __/____(___/____(___/_
 # ======================================================================
 
-MAKEFLAGS += --no-print-directory
+include ../Makefile.in
+
+SUBDIRS = MicroMax TogaII-1.3.1
 
 all:
-	@$(MAKE) -C engines
-	@if [ $$? != 0 ]; then exit 1; fi
-	@$(MAKE) -C src
-	@if [ $$? != 0 ]; then exit 1; fi
-	@$(MAKE) -C tcl
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir; \
+		if [ $$? != 0 ]; then exit 1; fi; \
+	done
 
 depend:
-	@$(MAKE) -C engines depend
-	@$(MAKE) -C src depend
-	@$(MAKE) -C tcl depend
 
 clean:
-	@$(MAKE) -C engines clean
-	@$(MAKE) -C src clean
-	@$(MAKE) -C tcl clean
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir clean; \
+	done
 
 install:
-	@$(MAKE) -C engines install
-	@$(MAKE) -C src install
-	@$(MAKE) -C tcl install
+	install -m 755 -d $(SHAREDIR)/engines
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir install; \
+	done
 
 uninstall:
-	@$(MAKE) -C engines uninstall
-	@$(MAKE) -C src uninstall
-	@$(MAKE) -C tcl uninstall
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir uninstall; \
+	done
+	if [ ! -z "`find $(SHAREDIR)/engines -type d -empty`" ]; then \
+		rmdir $(SHAREDIR)/engines; \
+	fi
 
 # vi:set ts=3 sw=3:
